@@ -20,14 +20,14 @@ if __name__ == '__main__':
 	model = get_model('vgg16').features
 	summary(model, (3, 244, 244))
 	
-	select_layer = 30
-	conv_model = torch.nn.Sequential(*list(model.children())[:select_layer])  
+	select_layer = 28
+	conv_model = torch.nn.Sequential(*list(model.children())[:select_layer+1])  
 
 
 	conv_model.cuda()
 	output = conv_model(input)[0]
 
 	
-	utils.vis_conv(output.cpu().detach().numpy(), 8, 8, "conv", "conv_layer_%d"%select_layer)
+	utils.vis_conv(output.cpu().detach().numpy(), 8, 8, "conv", "feature_map_%d"%select_layer)
 
 	

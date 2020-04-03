@@ -83,6 +83,9 @@ def normalize(x):
 
 def vis_conv(images, rows, cols, name, save_name):
 	print(images.shape)
+	#plt.suptitle(save_name)
+	figure = plt.figure()
+	
 	for i in range(rows):
 		for j in range(cols):
 			
@@ -99,7 +102,7 @@ def vis_conv(images, rows, cols, name, save_name):
 			frame.axes.get_yaxis().set_visible(False)
 			frame.axes.get_xaxis().set_visible(False)
 
-
+	figure.suptitle(save_name, fontsize=18)
 	plt.savefig('images\{}.jpg'.format(save_name), dpi=600)
 	plt.show()
 
