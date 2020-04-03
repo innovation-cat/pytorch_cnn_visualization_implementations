@@ -20,7 +20,7 @@ if __name__ == '__main__':
 	model = get_model('vgg16').features
 	summary(model, (3, 244, 244))
 	
-	select_layer = 28
+	select_layer = 29
 	conv_model = torch.nn.Sequential(*list(model.children())[:select_layer+1])  
 
 

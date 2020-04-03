@@ -17,16 +17,16 @@ if __name__ == '__main__':
 	
 	input = torch.unsqueeze(input, 0).cuda()
 
-	model = get_model('alexnet').features
+	model = get_model('alexnet')
 	summary(model, (3, 244, 244))
 	
 	select_layer = 6
 	
 	for i, (name, p) in enumerate(model.named_parameters()):
 		if i==select_layer:
-			output = p.data
+			output = p 
 			break
 	
-	utils.vis_conv(output.cpu().detach().numpy(), 8, 8, "filter", "filter_layer_%d"%select_layer)	
+	utils.vis_conv(output.cpu().detach().numpy(), 8, 8, "filter", "alexnet_filter_%d"%select_layer)	
 
 	
