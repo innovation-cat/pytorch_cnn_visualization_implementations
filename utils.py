@@ -2,49 +2,9 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import torch
+import torch, copy
 from torchvision import transforms
-
-
-def read_img(img_path, trans, size):
-    """util function to read and preprocess the test image.
-    Args:
-           img_path: path of image.
-           preprocess_input: preprocess_input function.
-           size: resize.
-    Returns:
-           img: original image.
-           pimg: processed image.
-    """
-    img = cv2.imread(img_path)
-    pimg = cv2.resize(img, size)
-
-    pimg = np.expand_dims(pimg, axis=0)
-    pimg = preprocess_input(pimg)
-
-    return transforms.ToTensor()
-
-
-def preprocess_image(pil_im):
-
-	mean = [0.485, 0.456, 0.406]
-	std = [0.229, 0.224, 0.225]
-
-	im_as_arr = np.float32(pil_im)
-
-	# Normalize the channels
-	for channel, _ in enumerate(im_as_arr):
-		im_as_arr[channel] /= 255
-		im_as_arr[channel] -= mean[channel]
-		im_as_arr[channel] /= std[channel]
-	# Convert to float tensor
-	im_as_ten = torch.from_numpy(im_as_arr).float().cuda()
-	# Add one more channel to the beginning. Tensor shape = 1,3,224,224
-	im_as_ten.unsqueeze_(0)
-	# Convert to Pytorch variable
-	im_as_ten.requires_grad_(True)
-	#print(im_as_ten.dtype)
-	return im_as_ten
+from PIL import Image
 
 def deprocess_image(x):
     """util function to convert a tensor into a valid image.
@@ -80,12 +40,33 @@ def normalize(x):
     """
     return x / (torch.sqrt(torch.mean(torch.mul(x, x))) + 1e-07)
 
+def recreate_image(im_as_var):
+    """
+        Recreates images from a torch variable, sort of reverse preprocessing
+    Args:
+        im_as_var (torch variable): Image to recreate
+    returns:
+        recreated_im (numpy arr): Recreated image in array
+    """
+    reverse_mean = [-0.485, -0.456, -0.406]
+    reverse_std = [1/0.229, 1/0.224, 1/0.225]
+    recreated_im = copy.copy(im_as_var.data.cpu().numpy()[0])
+    for c in range(3):
+        recreated_im[c] /= reverse_std[c]
+        recreated_im[c] -= reverse_mean[c]
+    recreated_im[recreated_im > 1] = 1
+    recreated_im[recreated_im < 0] = 0
+    recreated_im = np.round(recreated_im * 255)
+
+    recreated_im = np.uint8(recreated_im).transpose(1, 2, 0)
+    return recreated_im
+
+
 
 def vis_conv(images, rows, cols, name, save_name):
-	print(images.shape)
+	print(np.max(images), np.min(images), images.shape)
 	#plt.suptitle(save_name)
 	figure = plt.figure()
-	
 	for i in range(rows):
 		for j in range(cols):
 			
@@ -95,7 +76,7 @@ def vis_conv(images, rows, cols, name, save_name):
 				if filter_img.shape[0]==3:
 					filter_img = np.transpose(filter_img, (1, 2, 0))
 				else:
-					filter_img = filter_img[0]
+					filter_img = filter_img[0]  # only show the first filter
 			plt.subplot(rows, cols, i*cols+j+1)
 			plt.imshow(filter_img)
 			frame = plt.gca()
@@ -106,7 +87,40 @@ def vis_conv(images, rows, cols, name, save_name):
 	plt.savefig('images\{}.jpg'.format(save_name), dpi=600)
 	plt.show()
 
+def show_color_gradients(gradients, save_name):
+	# normalize 
+	gradients = gradients - gradients.min()
+	gradients /= gradients.max()
+	gradients = (gradients*255).astype(np.uint8)	
+	gradients = np.transpose(gradients, (1, 2, 0))
+	frame = plt.gca()
+	frame.axes.get_yaxis().set_visible(False)
+	frame.axes.get_xaxis().set_visible(False)
+	plt.imshow(gradients)
+	plt.show()
 
+
+def convert_to_grayscale(im_as_arr):
+	grayscale_im = np.max(np.abs(im_as_arr), axis=0)
+	#im_max = np.max(grayscale_im)
+	im_max = np.percentile(grayscale_im, 99)
+	im_min = np.min(grayscale_im)
+	grayscale_im = (np.clip((grayscale_im - im_min) / (im_max - im_min), 0, 1))
+	grayscale_im = np.expand_dims(grayscale_im, axis=0)
+	return grayscale_im
+	
+	
+def show_gray_gradients(gradients, save_name):
+	gradients = convert_to_grayscale(gradients)
+	gradients = np.repeat(gradients, 3, axis=0)
+	gradients = np.transpose(gradients, (1, 2, 0))
+	frame = plt.gca()
+	frame.axes.get_yaxis().set_visible(False)
+	frame.axes.get_xaxis().set_visible(False)
+	plt.imshow(gradients)
+	#plt.savefig('images\{}.jpg'.format(save_name), dpi=600)
+	plt.show()
+	
 def vis_heatmap(img, heatmap):
 	"""visualize heatmap.
 	Args:
@@ -138,3 +152,43 @@ def vis_heatmap(img, heatmap):
 	plt.tight_layout()
 	plt.savefig('images\heatmap.jpg', dpi=600)
 	plt.show()
+	
+def format_np_output(np_arr):
+    """
+        This is a (kind of) bandaid fix to streamline saving procedure.
+        It converts all the outputs to the same format which is 3xWxH
+        with using sucecssive if clauses.
+    Args:
+        im_as_arr (Numpy array): Matrix of shape 1xWxH or WxH or 3xWxH
+    """
+    # Phase/Case 1: The np arr only has 2 dimensions
+    # Result: Add a dimension at the beginning
+    if len(np_arr.shape) == 2:
+        np_arr = np.expand_dims(np_arr, axis=0)
+    # Phase/Case 2: Np arr has only 1 channel (assuming first dim is channel)
+    # Result: Repeat first channel and convert 1xWxH to 3xWxH
+    if np_arr.shape[0] == 1:
+        np_arr = np.repeat(np_arr, 3, axis=0)
+    # Phase/Case 3: Np arr is of shape 3xWxH
+    # Result: Convert it to WxHx3 in order to make it saveable by PIL
+    if np_arr.shape[0] == 3:
+        np_arr = np_arr.transpose(1, 2, 0)
+    # Phase/Case 4: NP arr is normalized between 0-1
+    # Result: Multiply with 255 and change type to make it saveable by PIL
+    if np.max(np_arr) <= 1:
+        np_arr = (np_arr*255).astype(np.uint8)
+    return np_arr
+
+
+def save_image(im, path):
+	"""
+		Saves a numpy matrix or PIL image as an image
+	Args:
+		im_as_arr (Numpy array): Matrix of shape DxWxH
+		path (str): Path to the image
+	"""
+	if isinstance(im, (np.ndarray, np.generic)):
+		im = format_np_output(im)
+		print(im.shape)
+		im = Image.fromarray(im)
+	im.save(path)	
