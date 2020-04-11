@@ -102,11 +102,17 @@ In this technique, we generate a synthetic image that maximally activates a neur
 $$
 argmax\ (S_c(I)-\lambda||I||_2^2)
 $$
-Where $I$ is input image, we initialize I to zeros first, and then repeat the following three steps until convergence or satisfy maximum iteration rounds:
+Where $I$ is input image, we initialize $I=0$ first, and then repeat the following three steps until convergence or satisfy the maximum number of iteration rounds:
 
-* Pass image I to model, and compute specific class scores
-* Back propagate to get gradient with respect to image pixels
+* Pass image $I$ to model, and compute specific class scores $S_c(I)$
+
+* Calculate objective loss, and back propagate to get gradient with respect to image pixels
+
 * Make a small update to image
+
+Paper:  [Gradient Ascent](https://arxiv.org/abs/1312.6034) - arXiv 2013
+
+In the following schematic diagram, we visualize three different classes, corresponding to no regularization, L1 regularization and L2 regularization.
 
 <table>
 <tbody>
@@ -138,8 +144,13 @@ Where $I$ is input image, we initialize I to zeros first, and then repeat the fo
 </table>
 
 
+We can also use gradient ascent technique to visualize intermediate layer (not model output), the only difference is that, we compute the mean of specific filter weights, we can rewrite this new objective function as follows:  
 
+$$
+argmax\ (M_{ij}(I)-\lambda||I||_2^2)
+$$
 
+where $M_{ij}(I)$ represents the means of filter $j$ of layer $i$ .
 
 <table border=0>
 	<tbody>
@@ -155,10 +166,6 @@ Where $I$ is input image, we initialize I to zeros first, and then repeat the fo
 </table>
 
 
-
-## Heat map
-
-
-
 ## Deep Dream
 
+Deep dream is also using gradient ascent to show visualization, the only difference is that, the input image is a real image, not random input.
