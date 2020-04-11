@@ -7,9 +7,10 @@ import torch, utils, cv2
 from torchvision import transforms
 
 
+
 if __name__ == '__main__':
 
-	img_path = 'dog.png'
+	img_path = './inputs/dog.png'
 
 	img = cv2.imread(img_path)
 
@@ -17,11 +18,15 @@ if __name__ == '__main__':
 	
 	input = torch.unsqueeze(input, 0).cuda()
 
-	model = get_model('vgg16').features
-	summary(model, (3, 244, 244))
 	
-	select_layer = 29
-	conv_model = torch.nn.Sequential(*list(model.children())[:select_layer+1])  
+	model = get_model('vgg16')
+	
+	select_layer = 1
+	
+	if "features" in dict(list(model.named_children())):
+		conv_model = torch.nn.Sequential(*list(model.features.children())[:select_layer+1])  
+	else:
+		conv_model = torch.nn.Sequential(*list(model.children())[:select_layer+1])  
 
 
 	conv_model.cuda()

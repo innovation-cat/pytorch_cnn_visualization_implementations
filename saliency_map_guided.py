@@ -67,7 +67,7 @@ class GuidedBackprop():
 
 if __name__ == "__main__":	
 	
-	examples = [('dog.png', 263), ('elephant.jpg', 101)]
+	examples = [('./inputs/dog.png', 263), ('./inputs/elephant.jpg', 101)]
 	
 	idx = 1
 	
@@ -77,7 +77,6 @@ if __name__ == "__main__":
 	img = cv2.imread(img_path)
 
 	print(img.shape)
-	#prep_img = preprocess_image(img, False).cuda()
 	prep_img = transforms.ToTensor()(img)
 	
 	prep_img = torch.unsqueeze(prep_img, 0).cuda()

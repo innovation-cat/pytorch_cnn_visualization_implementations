@@ -9,24 +9,16 @@ from torchvision import transforms
 
 if __name__ == '__main__':
 
-	img_path = 'dog.png'
-
-	img = cv2.imread(img_path)
-
-	input = transforms.ToTensor()(img)
+	model = get_model('densenet121')  # change model what you want
 	
-	input = torch.unsqueeze(input, 0).cuda()
-
-	model = get_model('alexnet')
-	summary(model, (3, 244, 244))
-	
-	select_layer = 6
+	select_layer = 26
 	
 	for i, (name, p) in enumerate(model.named_parameters()):
 		if i==select_layer:
 			output = p 
 			break
+
 	
-	utils.vis_conv(output.cpu().detach().numpy(), 8, 8, "filter", "alexnet_filter_%d"%select_layer)	
+	utils.vis_conv(output.cpu().detach().numpy(), 5, 5, "filter", "%s_filter_%d"%("densenet121", select_layer))	
 
 	

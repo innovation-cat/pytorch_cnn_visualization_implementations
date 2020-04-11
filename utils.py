@@ -6,60 +6,39 @@ import torch, copy
 from torchvision import transforms
 from PIL import Image
 
-def deprocess_image(x):
-    """util function to convert a tensor into a valid image.
-    Args:
-           x: tensor of filter.
-    Returns:
-           x: deprocessed tensor.
-    """
-    # normalize tensor: center on 0., ensure std is 0.1
-    x -= x.mean()
-    x /= (x.std() + 1e-5)
-    x *= 0.25
+mean = np.array([0.485, 0.456, 0.406])
+std = np.array([0.229, 0.224, 0.225])
 
-    # clip to [0, 1]
-    x += 0.5
-    x = np.clip(x, 0, 1)
-
-    # convert to RGB array
-    x *= 255
-    #if K.image_data_format() == 'channels_first':
-    x = np.transpose(x, (1, 2, 0))
-    x = np.clip(x, 0, 255).astype('uint8')
-
-    return x
-
-
-def normalize(x):
-    """utility function to normalize a tensor by its L2 norm
-    Args:
-           x: gradient.
-    Returns:
-           x: gradient.
-    """
-    return x / (torch.sqrt(torch.mean(torch.mul(x, x))) + 1e-07)
+def preprocess_image(image):
+	prep_img = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean, std)])(image)
+	return prep_img
 
 def recreate_image(im_as_var):
-    """
-        Recreates images from a torch variable, sort of reverse preprocessing
-    Args:
-        im_as_var (torch variable): Image to recreate
-    returns:
-        recreated_im (numpy arr): Recreated image in array
-    """
-    reverse_mean = [-0.485, -0.456, -0.406]
-    reverse_std = [1/0.229, 1/0.224, 1/0.225]
-    recreated_im = copy.copy(im_as_var.data.cpu().numpy()[0])
-    for c in range(3):
-        recreated_im[c] /= reverse_std[c]
-        recreated_im[c] -= reverse_mean[c]
-    recreated_im[recreated_im > 1] = 1
-    recreated_im[recreated_im < 0] = 0
-    recreated_im = np.round(recreated_im * 255)
+	"""
+		Recreates images from a torch variable, sort of reverse preprocessing
+	Args:
+		im_as_var (torch variable): Image to recreate
+	returns:
+		recreated_im (numpy arr): Recreated image in array
+	"""
+	reverse_mean = [-0.485, -0.456, -0.406]
+	reverse_std = [1/0.229, 1/0.224, 1/0.225]
+	if isinstance(im_as_var, torch.Tensor):
+		print("is tensor")
+		recreated_im = copy.copy(im_as_var.data.cpu().numpy()[0])
+	else:
+		print("is array")
+		recreated_im = copy.copy(im_as_var[0])
+		
+	for c in range(3):
+		recreated_im[c] /= reverse_std[c]
+		recreated_im[c] -= reverse_mean[c]
+	recreated_im[recreated_im > 1] = 1
+	recreated_im[recreated_im < 0] = 0
+	recreated_im = np.round(recreated_im * 255)
 
-    recreated_im = np.uint8(recreated_im).transpose(1, 2, 0)
-    return recreated_im
+	recreated_im = np.uint8(recreated_im).transpose(1, 2, 0)
+	return recreated_im
 
 
 
@@ -84,7 +63,7 @@ def vis_conv(images, rows, cols, name, save_name):
 			frame.axes.get_xaxis().set_visible(False)
 
 	figure.suptitle(save_name, fontsize=18)
-	plt.savefig('images\{}.jpg'.format(save_name), dpi=600)
+	#plt.savefig('outputs\{}.jpg'.format(save_name), dpi=600)
 	plt.show()
 
 def show_color_gradients(gradients, save_name):
@@ -93,11 +72,7 @@ def show_color_gradients(gradients, save_name):
 	gradients /= gradients.max()
 	gradients = (gradients*255).astype(np.uint8)	
 	gradients = np.transpose(gradients, (1, 2, 0))
-	frame = plt.gca()
-	frame.axes.get_yaxis().set_visible(False)
-	frame.axes.get_xaxis().set_visible(False)
-	plt.imshow(gradients)
-	plt.show()
+	show_image(gradients)
 
 
 def convert_to_grayscale(im_as_arr):
@@ -114,11 +89,16 @@ def show_gray_gradients(gradients, save_name):
 	gradients = convert_to_grayscale(gradients)
 	gradients = np.repeat(gradients, 3, axis=0)
 	gradients = np.transpose(gradients, (1, 2, 0))
+	
+	show_image(gradients)
+	
+	
+def show_image(image):
 	frame = plt.gca()
 	frame.axes.get_yaxis().set_visible(False)
 	frame.axes.get_xaxis().set_visible(False)
-	plt.imshow(gradients)
-	#plt.savefig('images\{}.jpg'.format(save_name), dpi=600)
+	plt.imshow(image)
+	#plt.savefig('outputs\{}.jpg'.format(save_name), dpi=600)
 	plt.show()
 	
 def vis_heatmap(img, heatmap):
@@ -150,7 +130,7 @@ def vis_heatmap(img, heatmap):
 	plt.axis('off')
 
 	plt.tight_layout()
-	plt.savefig('images\heatmap.jpg', dpi=600)
+	plt.savefig('outputs\heatmap.jpg', dpi=600)
 	plt.show()
 	
 def format_np_output(np_arr):
@@ -179,6 +159,12 @@ def format_np_output(np_arr):
         np_arr = (np_arr*255).astype(np.uint8)
     return np_arr
 
+def clip(image_tensor):
+
+	for c in range(3):
+		m, s = mean[c], std[c]
+		image_tensor[0, c] = torch.clamp(image_tensor[0, c], -m / s, (1 - m) / s)
+	return image_tensor
 
 def save_image(im, path):
 	"""
