@@ -2,9 +2,10 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import torch, copy
+import torch, copy, os
 from torchvision import transforms
 from PIL import Image
+import matplotlib.cm as mpl_color_map
 
 mean = np.array([0.485, 0.456, 0.406])
 std = np.array([0.229, 0.224, 0.225])
@@ -48,9 +49,7 @@ def vis_conv(images, rows, cols, name, save_name):
 	figure = plt.figure()
 	for i in range(rows):
 		for j in range(cols):
-			
 			filter_img = images[i*cols+j, ...]
-			
 			if name == "filter":
 				if filter_img.shape[0]==3:
 					filter_img = np.transpose(filter_img, (1, 2, 0))
@@ -101,37 +100,6 @@ def show_image(image):
 	#plt.savefig('outputs\{}.jpg'.format(save_name), dpi=600)
 	plt.show()
 	
-def vis_heatmap(img, heatmap):
-	"""visualize heatmap.
-	Args:
-		   img: original image.
-		   heatmap：heatmap.
-	"""
-	img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-
-	plt.figure()
-
-	plt.subplot(221)
-	plt.imshow(cv2.resize(img, (224, 224)))
-	plt.axis('off')
-
-	plt.subplot(222)
-	plt.imshow(heatmap)
-	plt.axis('off')
-
-	plt.subplot(212)
-	heatmap = cv2.resize(heatmap, (img.shape[1], img.shape[0]))
-	heatmap = np.uint8(255 * heatmap)
-	# We apply the heatmap to the original image
-	heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-	superimposed_img = np.uint8(heatmap * 0.4 + img)
-	superimposed_img = superimposed_img[...,::-1]
-	plt.imshow(superimposed_img)
-	plt.axis('off')
-
-	plt.tight_layout()
-	plt.savefig('outputs\heatmap.jpg', dpi=600)
-	plt.show()
 	
 def format_np_output(np_arr):
     """
@@ -178,3 +146,56 @@ def save_image(im, path):
 		print(im.shape)
 		im = Image.fromarray(im)
 	im.save(path)	
+	
+	
+def save_class_activation_images(org_img, activation_map, file_name):
+	"""
+		Saves cam activation map and activation map on the original image
+
+	Args:
+		org_img (PIL img): Original image
+		activation_map (numpy arr): Activation map (grayscale) 0-255
+		file_name (str): File name of the exported image
+	"""
+	if not os.path.exists('../results'):
+		os.makedirs('../results')
+	# Grayscale activation map
+	heatmap, heatmap_on_image = apply_colormap_on_image(org_img, activation_map, 'hsv')
+	# Save colored heatmap
+	path_to_file = os.path.join('../results', file_name+'_Cam_Heatmap.png')
+	save_image(heatmap, path_to_file)
+	# Save heatmap on iamge
+	path_to_file = os.path.join('../results', file_name+'_Cam_On_Image.png')
+	save_image(heatmap_on_image, path_to_file)
+	# SAve grayscale heatmap
+	path_to_file = os.path.join('../results', file_name+'_Cam_Grayscale.png')
+	save_image(activation_map, path_to_file)
+
+
+def apply_colormap_on_image(org_im, activation, colormap_name):
+	"""
+		Apply heatmap on image
+	Args:
+		org_img (PIL img): Original image
+		activation_map (numpy arr): Activation map (grayscale) 0-255
+		colormap_name (str): Name of the colormap
+	"""
+	# Get colormap
+	color_map = mpl_color_map.get_cmap(colormap_name)
+	no_trans_heatmap = color_map(activation)
+	# Change alpha channel in colormap to make sure original image is displayed
+	heatmap = copy.copy(no_trans_heatmap)
+	heatmap[:, :, 3] = 0.4
+	heatmap = Image.fromarray((heatmap*255).astype(np.uint8))
+	no_trans_heatmap = Image.fromarray((no_trans_heatmap*255).astype(np.uint8))
+
+	# Apply heatmap on iamge
+	heatmap_on_image = Image.new("RGBA", org_im.size)
+	heatmap_on_image = Image.alpha_composite(heatmap_on_image, org_im.convert('RGBA'))
+	
+	#heatmap = heatmap.transpose(method=Image.TRANSVERSE)
+	print(heatmap_on_image)
+	print(heatmap)
+	
+	heatmap_on_image = Image.alpha_composite(heatmap_on_image, heatmap)
+	return no_trans_heatmap, heatmap_on_image

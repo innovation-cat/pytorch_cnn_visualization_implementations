@@ -8,10 +8,11 @@ This repository including most of cnn visualizations techniques using pytorch
 
 
  - [Feature map visualization](#feature-map-visualization)
- - [Kernels/Filters visualization](#kernels/filters-visualization)
+ - [Kernels/Filters visualization](#kernels-visualization)
  - [Saliency map](#saliency-map)
  - [Gradient Ascent](#gradient-ascent)
  - [Deep Dream](#deep-dream)
+ - [Grad_CAM](#grad-cam)
 
 
 ## Feature map visualization
@@ -25,7 +26,7 @@ Source code:   [vis_feature_map.py](./vis_feature_map.py)
 
 
 
-## Kernels/Filters visualization
+## Kernels visualization
 
 We can also directly visualize raw convolutional filter weights. This method is suitable for the first convolutional kernel, the results show that the first layer can learn simple features, such as edge, colored blobs. Although we can visualize raw filter weights at higher layers, but it doesn't make any sense.
 
@@ -236,3 +237,32 @@ Source code:   [deep_dream_improved.py](./deep_dream_improved.py)
     </tbody>
 </table>
 
+
+## Grad CAM
+
+Gradient-weighted Class Activation Mapping (Grad-CAM), uses the gradients of any target in a classification network flowing into the final convolutional layer to produce a coarse localization map highlighting the important regions in the image for predicting the concept.
+
+* [CAM](https://arxiv.org/abs/1512.04150) - CVPR 2016
+* [Grad CAM](https://arxiv.org/abs/1610.02391) - ICCV 2017
+
+Source code: [grad_cam.py]("grad_cam.py")
+
+<table border=0>
+	<tbody>
+		<tr>
+			<td width="10%" align="center"> Original image </td>
+			<td width="40%" > <img src="./inputs/dog.png"> </td>
+			<td width="40%"> <img src="./inputs/elephant.jpg"> </td>
+		</tr>
+        <tr>
+			<td width="10%" align="center"> layer=35 </td>
+            <td width="40%" > <img src="./outputs/dog_cam_top1.png"> </td>
+            <td width="40%" > <img src="./outputs/elephant_cam_top1.png"> </td>
+        </tr>
+        <tr>
+			<td width="10%" align="center"> heat_map </td>
+            <td width="40%" > <img src="./outputs/dog_heat_map.png"> </td>
+            <td width="40%" > <img src="./outputs/elephant_heat_map.png"> </td>
+        </tr>
+    </tbody>
+</table>
