@@ -68,8 +68,8 @@ All these methods produce visualizations to show which inputs a neural network i
 
 The common idea is to compute the gradient of the prediction score with respect to the input pixels, and keep the weights fixed. This determines the importance of the corresponding pixels of input images for the specific class.
 
-* saliency map via vanillas backpropagation：[Source Code]("saliency_map_vanilla.py")
-* saliency map via guided backpropagation：[Source Code]("saliency_map_guided.py")
+* saliency map via vanillas backpropagation：[saliency_map_vanilla.py]("saliency_map_vanilla.py")
+* saliency map via guided backpropagation：[saliency_map_guided.py]("saliency_map_guided.py")
 
 <table border=0>
 	<tbody>
@@ -123,6 +123,8 @@ Paper:  [Gradient Ascent](https://arxiv.org/abs/1312.6034) - arXiv 2013
 
 In the following schematic diagram, we visualize three different classes, corresponding to no regularization, L1 regularization and L2 regularization.
 
+Source code: [gradient_ascent_specific_class.py]("gradient_ascent_specific_class.py")
+
 <table>
 <tbody>
 	<tr>
@@ -162,6 +164,8 @@ $$
 
 where $M_{ij}(I)$ represents the means of filter $j$ of layer $i$ .
 
+Source code: [gradient_ascent_intermediate_layer.py]("gradient_ascent_intermediate_layer.py")
+
 <table border=0>
 	<tbody>
         <tr>
@@ -185,7 +189,7 @@ Deep dream is also using gradient ascent to show visualization, the only differe
 
 Here, we use pretrained VGG19 model, and replace random image with a real image, we choose layer 34, the following figures show the results.
 
-Source code:   [deep_dream](./deep_dream.py)
+Source code:   [deep_dream.py](./deep_dream.py)
 
 <table border=0>
 	<tbody>
@@ -210,7 +214,7 @@ Source code:   [deep_dream](./deep_dream.py)
 
 Although it works, but the quality can be improved by pyramid reconstruction.
 
-Source code:   [deep_dream_improved](./deep_dream_improved.py)
+Source code:   [deep_dream_improved.py](./deep_dream_improved.py)
 
 <table border=0>
 	<tbody>
