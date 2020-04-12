@@ -16,9 +16,9 @@ This repository including most of cnn visualizations techniques using pytorch
 
 ## Feature map visualization
 
-In this situation, we can directly visualize intermediate feature map via one forward pass. In the following illustrations, we use pretrained vgg16 model, and output layer_1, layer_5, layer_15, layer_30 respectively.
+In this technique, we can directly visualize intermediate feature map via one forward pass. In the following illustrations, we use pre-trained vgg16 model, and output layer_1, layer_6, layer_15, layer_29 respectively.
 
-Source code:   [vis_feature_map](./vis_feature_map.py)
+Source code:   [vis_feature_map.py](./vis_feature_map.py)
 
 <div align='center'><img src="./outputs/feature_map_1.jpg" width="400"/><img src="./outputs/feature_map_6.jpg" width="400"/></div>
 <div align='center'><img src="./outputs/feature_map_15.jpg" width="400"/><img src="./outputs/feature_map_29.jpg" width="400"/></div>
@@ -27,9 +27,9 @@ Source code:   [vis_feature_map](./vis_feature_map.py)
 
 ## Kernels/Filters visualization
 
-We can directly visualize raw convolutional filter weights. This method is suitable for the first convolutional kernel, the results show that the first layer can learn simple features, such as edge, colored blobs. We can visualize raw filter weights at higher layers, but it doesn't make any sense.
+We can also directly visualize raw convolutional filter weights. This method is suitable for the first convolutional kernel, the results show that the first layer can learn simple features, such as edge, colored blobs. Although we can visualize raw filter weights at higher layers, but it doesn't make any sense.
 
-Source code:   [vis_filter](./vis_filter.py)
+Source code:   [vis_filter.py](./vis_filter.py)
 
 <table border=0>
 	<tbody>
@@ -61,6 +61,8 @@ Saliency map, also known as [post-hoc attention](https://glassboxmedicine.com/20
 
 * [DeconvNets](https://arxiv.org/abs/1311.2901) - ECCV 2014
 * [Guided Backpropagation](https://arxiv.org/abs/1412.6806) - ICLR 2015 workshop track
+
+* [Gradients vs. DeconvNets vs. Guided Backpropagation](https://glassboxmedicine.com/2019/10/06/cnn-heat-maps-gradients-vs-deconvnets-vs-guided-backpropagation/)
 
 All these methods produce visualizations to show which inputs a neural network is using to make a particular prediction. 
 

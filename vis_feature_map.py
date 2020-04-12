@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
 	
 	model = get_model('vgg16')
-	
+	#summary(model, (3, 224, 224))
 	select_layer = 1
 	
 	if "features" in dict(list(model.named_children())):

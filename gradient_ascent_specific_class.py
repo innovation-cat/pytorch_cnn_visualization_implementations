@@ -6,7 +6,6 @@ from torchsummary import summary
 import torch, utils, cv2
 from torchvision import transforms
 from torch.optim import Adam
-from misc_functions import recreate_image, save_image
 import matplotlib.pyplot as plt
 
 
@@ -33,7 +32,7 @@ def gradient_ascent_output(prep_img, target_class):
 		
 		if i % 5 == 0:
 			im_path = '../generated/output_vis_%d.jpg'%i
-			save_image(created_image, im_path)			
+			utils.save_image(created_image, im_path)			
 
 if __name__ == "__main__":
 
