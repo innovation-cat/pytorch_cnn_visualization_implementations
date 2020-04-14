@@ -67,10 +67,16 @@ Saliency map, also known as [post-hoc attention](https://glassboxmedicine.com/20
 
 All these methods produce visualizations to show which inputs a neural network is using to make a particular prediction. 
 
-The common idea is to compute the gradient of the prediction score with respect to the input pixels, and keep the weights fixed. This determines the importance of the corresponding pixels of input images for the specific class.
+The common idea is to compute the gradient of the prediction score with respect to the input pixels, and keep the weights fixed. This determines the importance of the corresponding pixels of input images for the specific class. 
+
+The following figure show the only difference of these three methods when back propagate through ReLU module.
+
+<div align='center'><img src="./inputs/relu_backprop.png" width="700"/></div>
+
 
 * saliency map via vanillas backpropagation：[saliency_map_vanilla.py]("saliency_map_vanilla.py")
 * saliency map via guided backpropagation：[saliency_map_guided.py]("saliency_map_guided.py")
+* saliency map via guided backpropagation：[saliency_map_deconv.py]("saliency_map_deconv.py")
 
 <table border=0>
 	<tbody>
@@ -98,6 +104,16 @@ The common idea is to compute the gradient of the prediction score with respect 
 			<td width="5%" align="center"> guided backpropagation (gray image) </td>
             <td width="45%" > <img src="./outputs/dog_guided_backpropagation_gray.jpg"> </td>
             <td width="45%" > <img src="./outputs/elephant_guided_backpropagation_gray.jpg"> </td>
+        </tr>
+		<tr>
+			<td width="5%" align="center"> deconv backpropagation (color image) </td>
+            <td width="45%" > <img src="./outputs/dog_deconv_backpropagation_color.jpg"> </td>
+            <td width="45%" > <img src="./outputs/elephant_deconv_backpropagation_color.jpg"> </td>
+        </tr>
+        <tr>
+			<td width="5%" align="center"> deconv backpropagation (gray image) </td>
+            <td width="45%" > <img src="./outputs/dog_deconv_backpropagation_gray.jpg"> </td>
+            <td width="45%" > <img src="./outputs/elephant_deconv_backpropagation_gray.jpg"> </td>
         </tr>
     </tbody>
 </table>
