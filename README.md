@@ -74,9 +74,9 @@ The following figure show the only difference of these three methods when back p
 <div align='center'><img src="./inputs/relu_backprop.png" width="700"/></div>
 
 
-* saliency map via vanillas backpropagation：[saliency_map_vanilla.py]("saliency_map_vanilla.py")
-* saliency map via guided backpropagation：[saliency_map_guided.py]("saliency_map_guided.py")
-* saliency map via guided backpropagation：[saliency_map_deconv.py]("saliency_map_deconv.py")
+* saliency map via vanillas backpropagation：[saliency_map_vanilla.py](saliency_map_vanilla.py)
+* saliency map via guided backpropagation：[saliency_map_guided.py](saliency_map_guided.py)
+* saliency map via guided backpropagation：[saliency_map_deconv.py](saliency_map_deconv.py)
 
 <table border=0>
 	<tbody>
