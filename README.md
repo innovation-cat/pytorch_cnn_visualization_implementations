@@ -69,6 +69,25 @@ All these methods produce visualizations to show which inputs a neural network i
 
 The common idea is to compute the gradient of the prediction score with respect to the input pixels, and keep the weights fixed. This determines the importance of the corresponding pixels of input images for the specific class. 
 
+The principle behind saliency map is that, in the case of deep ConvNets, the class score $S_c(I)$ is a highly non-linear function of $I$, 
+
+$$
+S_c(I)=w_c^TI+b_c
+$$
+
+Given an image $I_0$, we can approximate $S_c(I)$ with a linear function in the neighborhood of $I_0$ by computing the first-order Taylor expansion:
+$$
+S_c(I) \approx w^TI+b
+$$
+
+where $w$ is the derivative of $S_c$ with respect to the image $I$ at the point $I_0$:
+
+$$
+w=\frac{\partial{S_c}}{\partial{I}}|_{I=I_0}
+$$
+
+So saliency map can be thought as the weights importance matrix with respect to input image pixels.
+
 The following figure show the only difference of these three methods when back propagate through ReLU module.
 
 <div align='center'><img src="./inputs/relu_backprop.png" width="700"/></div>
