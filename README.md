@@ -252,6 +252,8 @@ Although it works, but the quality can be improved by pyramid reconstruction.
 
 Source code:   [deep_dream_improved.py](deep_dream_improved.py)
 
+This code reference this project : [eriklindernoren/PyTorch-Deep-Dream](https://github.com/eriklindernoren/PyTorch-Deep-Dream)
+
 <table border=0>
 	<tbody>
 		<tr>
@@ -281,6 +283,8 @@ Gradient-weighted Class Activation Mapping (Grad-CAM), uses the gradients of any
 * [Grad CAM](https://arxiv.org/abs/1610.02391) - ICCV 2017
 
 Source code: [grad_cam.py](grad_cam.py)
+
+This code reference this project : [jacobgil/pytorch-grad-cam](https://github.com/jacobgil/pytorch-grad-cam)
 
 <table border=0>
 	<tbody>
