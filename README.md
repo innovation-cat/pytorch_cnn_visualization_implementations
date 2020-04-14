@@ -159,7 +159,7 @@ Paper:  [Gradient Ascent](https://arxiv.org/abs/1312.6034) - arXiv 2013
 
 In the following schematic diagram, we visualize three different classes, corresponding to no regularization, L1 regularization and L2 regularization.
 
-Source code: [gradient_ascent_specific_class.py]("gradient_ascent_specific_class.py")
+Source code: [gradient_ascent_specific_class.py](gradient_ascent_specific_class.py)
 
 <table>
 <tbody>
@@ -200,7 +200,7 @@ $$
 
 where $M_{ij}(I)$ represents the means of filter $j$ of layer $i$ .
 
-Source code: [gradient_ascent_intermediate_layer.py]("gradient_ascent_intermediate_layer.py")
+Source code: [gradient_ascent_intermediate_layer.py](gradient_ascent_intermediate_layer.py)
 
 <table border=0>
 	<tbody>
@@ -225,7 +225,7 @@ Deep dream is also using gradient ascent to show visualization, the only differe
 
 Here, we use pretrained VGG19 model, and replace random image with a real image, we choose layer 34, the following figures show the results.
 
-Source code:   [deep_dream.py](./deep_dream.py)
+Source code:   [deep_dream.py](deep_dream.py)
 
 <table border=0>
 	<tbody>
@@ -250,7 +250,7 @@ Source code:   [deep_dream.py](./deep_dream.py)
 
 Although it works, but the quality can be improved by pyramid reconstruction.
 
-Source code:   [deep_dream_improved.py](./deep_dream_improved.py)
+Source code:   [deep_dream_improved.py](deep_dream_improved.py)
 
 <table border=0>
 	<tbody>
@@ -280,7 +280,7 @@ Gradient-weighted Class Activation Mapping (Grad-CAM), uses the gradients of any
 * [CAM](https://arxiv.org/abs/1512.04150) - CVPR 2016
 * [Grad CAM](https://arxiv.org/abs/1610.02391) - ICCV 2017
 
-Source code: [grad_cam.py]("grad_cam.py")
+Source code: [grad_cam.py](grad_cam.py)
 
 <table border=0>
 	<tbody>
